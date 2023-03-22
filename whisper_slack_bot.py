@@ -7,6 +7,7 @@ from slack_bolt.adapter.socket_mode import SocketModeHandler
 from dotenv import load_dotenv
 import openai
 import requests
+import re
 
 load_dotenv()
 
@@ -20,9 +21,14 @@ app = App(token=SLACK_BOT_TOKEN)
 client = WebClient(token=SLACK_BOT_TOKEN)
 openai.api_key = OPENAI_API_KEY
 
-def transcribe_audio(audio_data, language):
+def transcribe_audio(audio_data, language, prompt=None):
     # whisper APIへのリクエスト
-    transcript = openai.Audio.transcribe("whisper-1", audio_data, language=language)
+    if prompt:
+        prompt_input = prompt.group(1)
+        transcript = openai.Audio.transcribe("whisper-1", audio_data, language=language, prompt=prompt_input)
+    else:
+        transcript = openai.Audio.transcribe("whisper-1", audio_data, language=language)
+
     return transcript
 
 def handle_event(event, say):
@@ -51,7 +57,12 @@ def handle_event(event, say):
                     f.write(audio_file_download.content)
                 # 音声ファイルの文字起こしを実施
                 with open(filename, "rb") as audio_file:
-                    transcript = transcribe_audio(audio_file, language)
+                    input_message = event["text"]
+                    prompt = None
+                    if "prompt" in input_message:
+                        prompt = re.search(r"(?<=prompt[:：])\s*(.+)", input_message)
+
+                    transcript = transcribe_audio(audio_file, language, prompt)
                     title = file["title"]
                     output = f"文字起こし致しました：{title}.{filetype}\n----\n{transcript['text']}"
                     # 一時ファイルの削除
