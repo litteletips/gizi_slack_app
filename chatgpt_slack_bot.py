@@ -27,6 +27,7 @@ def handle_event(event, say):
 
     if "議事録" in input_message:
         system_message = """
+            lang : jp
             You have over 20 years of experience as an IT consultant and have worked on a wide variety of industries and types of projects related to IT consulting.
             You will be in charge of writing the minutes of the meeting, using your knowledge of IT and consulting to ensure that the chapters are properly organized by topic, that the points of discussion are easy to understand, and that there are no typographical errors or omissions.
             """
@@ -45,7 +46,14 @@ def handle_event(event, say):
             サマリー:
             """
     else:
-        system_message = "You have over 20 years of experience as an IT consultant and have worked on a wide variety of industries and types of projects related to IT consulting. Answer as concisely as possible."
+        system_message = """
+        """
+
+        # system_message = """
+        # #lang : jp
+        # You have over 20 years of experience as an IT consultant and have worked on a wide variety of industries and types of projects related to IT consulting. 
+        # Answer as concisely as possible.
+        # """
 
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
