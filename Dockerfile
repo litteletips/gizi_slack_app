@@ -9,7 +9,7 @@ WORKDIR /app
 COPY . /app
 
 # ポートの指定
-EXPOSE 3001
+EXPOSE 3000
 
 # 環境変数の設定
 ENV SLACK_APP_TOKEN=<YOUR_SLACK_APP_TOKEN>
